@@ -14,17 +14,16 @@ app.get("/", (req, res) => {
 });
 
 io.on("connection", (socket) => {
-    socket.on("join", (name) => {
-        console.log(`${name} joined with ID : ${socket.id}`);
-    });
-    socket.on("message", (msg) => {
-        console.log(msg);
-        socket.broadcast.emit("message", msg);
-    });
+  console.log("a user connected:", socket.id);
 
-    socket.on("disconnect", (msg) => {
-        console.log("Somebody has left the room");
-    });
+  socket.on("joinRoom", (data) => {
+    socket.join(data.roomCode);
+    console.log("joined room", data.roomCode);
+  });
+
+  socket.on("sendMessage", (data) => {
+    socket.to(data.roomCode).emit("recieveMessage", data);
+  });
 });
 
 server.listen(3000, () => {
